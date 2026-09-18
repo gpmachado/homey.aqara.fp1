@@ -4,6 +4,7 @@ const { ZigBeeDevice } = require('homey-zigbeedriver');
 const AqaraLumiCluster = require('../../lib/AqaraLumiCluster');
 const { AvailabilityManagerPassive } = require('../../lib/AvailabilityManager');
 const { TimeServerBoundCluster } = require('../../lib/TimeCluster');
+const { writeAttributesVerbose } = require('../../lib/zclDebug');
 
 const AQARA_MFG = 0x115F;
 
@@ -319,7 +320,7 @@ class AqaraFP1Device extends ZigBeeDevice {
     try {
       const cluster = this.zclNode?.endpoints?.[1]?.clusters?.manuSpecificLumi;
       if (!cluster) throw new Error('Cluster not available');
-      await cluster.writeAttributes({ [attrName]: value }, { manufacturerCode: AQARA_MFG });
+      await writeAttributesVerbose(this, cluster, { [attrName]: value }, { manufacturerCode: AQARA_MFG });
       const logValue = Buffer.isBuffer(value) ? value.toString('hex') : value;
       this.log(`[FP1] Wrote attr ${attrName} = ${logValue}`);
     } catch (err) {
